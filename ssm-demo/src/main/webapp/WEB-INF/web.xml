@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>SSM-DEMO</display-name>
+
+    <!--
+    1.初始化spring->applicationContext.xml
+    2.将spring存入servletContext
+    -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
+
+
+    <servlet>
+        <servlet-name>DispatherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:springmvc.xml</param-value>
+        </init-param>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>DispatherServlet</servlet-name>
+        <!--
+        资源：动态资源(servlet,jsp),静态资源（html/css/js/png）
+        /*：处理所有资源(动态,静态)
+        /:  处理静态资源
+        -->
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    
+    
+    <welcome-file-list>
+        <welcome-file>/WEB-INF/jsp/index.jsp</welcome-file>
+    </welcome-file-list>
+    
+</web-app>

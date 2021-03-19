@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!--    <settings>-->
+<!--        <setting name="mapUnderscoreToCamelCase" value="true"/>-->
+<!--    </settings>-->
+    <typeAliases>
+        <!--批量给pojo下的所有实体配置了别名为类名-->
+        <package name="com.yaorange.ssm.pojo"/>
+    </typeAliases>
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+    </plugins>
+    <mappers>
+        <!--批量加载mapper包下的所有xml配置文件-->
+        <package name="com.yaorange.ssm.mapper"/>
+    </mappers>
+</configuration>

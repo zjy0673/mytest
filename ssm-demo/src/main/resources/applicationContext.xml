@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="com.yaorange.ssm.service"/>
+
+
+    <!--整合mybatis-->
+    <!--1.ioc,将sqlSessionFactory初始化交给spring-->
+
+    <!--加载jdbc.properties-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--数据源-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driverClass}"></property>
+        <property name="jdbcUrl" value="${jdbc.jdbcUrl}"></property>
+        <property name="user" value="${jdbc.user}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!--sqlSessionFactory-->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--将mybatis创建的代理对象存入spring-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sessionFactory"></property>
+        <property name="basePackage" value="com.yaorange.ssm.mapper"></property>
+    </bean>
+
+    <!--2.aop,将mybatis的事务管理交给spring-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--
+            isolation:事务隔离级别
+            propagation:事务传播机制，设置不同增强方法是否在同一个事务中
+            -->
+            <tx:method name="save*" isolation="DEFAULT" propagation="REQUIRED" />
+            <tx:method name="update*" isolation="DEFAULT" propagation="REQUIRED" />
+            <tx:method name="delete*" isolation="DEFAULT" propagation="REQUIRED" />
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="*" isolation="DEFAULT" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <!--切入点-->
+        <aop:pointcut id="txPointcut" expression="execution(* com.yaorange.ssm.service.*Service.*(..))"/>
+        <!--事务增强-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
+    </aop:config>
+
+</beans>
